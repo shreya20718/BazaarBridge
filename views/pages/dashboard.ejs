@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bazar Bridge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #c9e5f5, #fcd1e3);
+      color: #333;
+      padding: 20px;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .logo-container {
+      margin: 30px auto 20px;
+    }
+
+    .logo-img {
+      width: 150px;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      background: #fff;
+      padding: 10px;
+    }
+
+    h1 {
+      margin-top: 10px;
+      font-size: 28px;
+      color: #6d3b83;
+    }
+
+    .content-box {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(10px);
+      margin: 40px auto;
+      padding: 30px;
+      max-width: 800px;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    .content-box h2 {
+      color: #6a328a;
+      margin-bottom: 15px;
+    }
+
+    .content-box p {
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .content-box ul {
+      padding-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    .content-box li {
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    .main-btn {
+      background: rgba(156, 84, 240, 0.9);
+      color: white;
+      padding: 14px 32px;
+      font-size: 16px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 8px 20px rgba(156, 84, 240, 0.3);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .main-btn:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transform: scale(1.05);
+    }
+
+    .button-group {
+      margin: 20px auto 40px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-nav {
+      background-color: #6d3b83;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-nav:hover {
+      background-color: #522a62;
+      transform: scale(1.05);
+    }
+
+    .footer {
+      background: linear-gradient(135deg, #333, #444);
+      color: white;
+      padding: 30px 0;
+      margin-top: auto;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 20px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .logo-img {
+        width: 110px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .content-box {
+        padding: 20px;
+      }
+
+      .main-btn, .btn-nav {
+        width: 100%;
+        margin: 5px 0;
+      }
+
+      .footer-container {
+        flex-direction: column;
+      }
+
+      .button-group {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HOME PAGE -->
+  <div id="home" class="page active">
+    <div class="logo-container">
+      <div class="logo-img">
+        <i class="fas fa-bridge" style="font-size: 60px; color: #6d3b83;"></i>
+      </div>
+      <h1>Welcome to Bazar Bridge</h1>
+    </div>
+
+    <div class="content-box">
+      <h2>Our Mission</h2>
+      <p>At Bazar Bridge, we strive to connect vendors and suppliers on a seamless, trustworthy, and profitable platform. Whether you're here to sell, supply, or scale — we've built a space for you.</p>
+
+      <h2>Why Choose Us?</h2>
+      <ul>
+        <li>Fast onboarding</li>
+        <li>Secure transactions</li>
+        <li>24/7 customer support</li>
+      </ul>
+
+      <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+        <button class="main-btn" onclick="showPage('vendor')">Vendors</button>
+        <button class="main-btn" onclick="showPage('supplier')">Suppliers</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+        <a href="#" class="footer-link" onclick="openModal('home')">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="#" class="footer-link" onclick="openModal('contact')">
+          <i class="fas fa-phone"></i> Contact Us
+        </a>
+        <a href="#" class="footer-link" onclick="openModal('about')">
+          <i class="fas fa-info-circle"></i> About Us
+        </a>
+        <a href="#" class="footer-link" onclick="openModal('account')">
+          <i class="fas fa-user"></i> Account
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- SUPPLIER PAGE -->
+  <div id="supplier" class="page">
+    <div class="logo-container">
+      <div class="logo-img">
+        <i class="fas fa-truck" style="font-size: 60px; color: #6d3b83;"></i>
+      </div>
+      <h1>Supplier Dashboard</h1>
+    </div>
+
+    <div class="content-box">
+      <h2>Advantages for Suppliers</h2>
+      <ul>
+        <li>Access to a wide range of retail vendors.</li>
+        <li>Streamlined procurement and bulk ordering.</li>
+        <li>Timely payments with detailed invoicing.</li>
+        <li>Insightful data analytics to understand market demand.</li>
+      </ul>
+
+      <h2>Terms and Conditions</h2>
+      <p>
+        Suppliers are required to provide genuine and quality products within stipulated timelines.
+        Compliance with legal standards and delivery norms is mandatory.
+        Failure to comply may result in termination of the supplier agreement.
+      </p>
+
+      <h2>Privacy Policy</h2>
+      <p>
+        All supplier data is securely handled with end-to-end encryption.
+        Business details are confidential and shared only with authorized parties.
+        We maintain strict privacy protocols to ensure your trust and safety.
+      </p>
+    </div>
+
+    <!-- Back, Sign Up & Register Buttons -->
+    <div class="button-group">
+      <button class="btn-nav" onclick="showPage('home')">Back</button>
+      <button class="btn-nav" onclick="openModal('signup')">Sign Up</button>
+      <button class="btn-nav" onclick="location.href='/supplierdetail'" >Register as Supplier</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+        <a href="#" class="footer-link" onclick="showPage('home')"><i class="fas fa-home"></i> Home</a>
+        <a href="#" class="footer-link" onclick="openModal('contact')"><i class="fas fa-phone"></i> Contact Us</a>
+        <a href="#" class="footer-link" onclick="openModal('about')"><i class="fas fa-info-circle"></i> About Us</a>
+        <a href="#" class="footer-link" onclick="openModal('account')"><i class="fas fa-user"></i> Account</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- VENDOR PAGE -->
+  <div id="vendor" class="page">
+    <div class="logo-container">
+      <div class="logo-img">
+        <i class="fas fa-store" style="font-size: 60px; color: #6d3b83;"></i>
+      </div>
+      <h1>Vendor Dashboard</h1>
+    </div>
+
+    <div class="content-box">
+      <h2>Advantages for Vendors</h2>
+      <ul>
+        <li>Wide customer reach with real-time product visibility.</li>
+        <li>Seamless inventory and order management.</li>
+        <li>Fast payment cycles with secure transactions.</li>
+        <li>Analytics to track sales and performance.</li>
+      </ul>
+
+      <h2>Terms and Policies</h2>
+      <p>
+        By registering as a vendor, you agree to adhere to our platform's guidelines and standards.
+        Product authenticity, timely delivery, and customer satisfaction are mandatory.
+        Violations may lead to account suspension or removal.
+      </p>
+
+      <h2>Privacy Policy</h2>
+      <p>
+        All vendor information is securely stored and never shared without explicit consent.
+        We use the latest encryption protocols to keep your business data private and protected.
+        Your privacy is our priority.
+      </p>
+    </div>
+
+    <!-- Back & Proceed Buttons -->
+    <div class="button-group">
+      <button class="btn-nav" onclick="showPage('home')">Back</button>
+      <button class="btn-nav" onclick="openModal('register-vendor')">Proceed</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+        <a href="#" class="footer-link" onclick="showPage('home')"><i class="fas fa-home"></i> Home</a>
+        <a href="#" class="footer-link" onclick="openModal('contact')"><i class="fas fa-phone"></i> Contact Us</a>
+        <a href="#" class="footer-link" onclick="openModal('about')"><i class="fas fa-info-circle"></i> About Us</a>
+        <a href="#" class="footer-link" onclick="openModal('account')"><i class="fas fa-user"></i> Account</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    function showPage(pageId) {
+      // Hide all pages
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => {
+        page.classList.remove('active');
+      });
+      
+      // Show the selected page
+      document.getElementById(pageId).classList.add('active');
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    function openModal(section) {
+      switch(section) {
+        case 'home':
+          showPage('home');
+          break;
+        case 'contact':
+          alert('Contact Us: Email: info@bazarbridge.com | Phone: +1-234-567-8900');
+          break;
+        case 'about':
+          alert('About Bazar Bridge: We are a leading platform connecting vendors and suppliers worldwide, facilitating seamless business relationships and transactions.');
+          break;
+        case 'account':
+          alert('Account section - Login/Register functionality would be implemented here.');
+          break;
+        case 'signup':
+          alert('Sign Up functionality would redirect to registration form.');
+          break;
+        case 'register-supplier':
+          alert('Supplier registration process would begin here.');
+          break;
+        case 'register-vendor':
+          alert('Vendor registration process would begin here.');
+          break;
+        default:
+          alert(`Opening ${section} section...`);
+      }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      showPage('home');
+    });
+  </script>
+</body>
+</html>

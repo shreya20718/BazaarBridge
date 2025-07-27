@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Welcome, <%= supplier.fullName %></h2>
+<ul>
+  <li>GST Number: <%= supplier.gstNumber %></li>
+  <li>PAN Number: <%= supplier.panNumber %></li>
+  <li>Aadhaar Number: <%= supplier.aadhaarNumber %></li>
+  <li>Contact Number: <%= supplier.contactNumber %></li>
+  <li>Email Address: <%= supplier.emailAddress %></li>
+  <li>Business Address: <%= supplier.businessAddress %></li>
+  <li>Pickup Address: <%= supplier.pickupAddress %></li>
+  <li>Account Holder Name: <%= supplier.accountHolderName %></li>
+  <li>Bank Name: <%= supplier.bankName %></li>
+</ul>
+<a href="/logout">Logout</a>
+</body>
+</html>

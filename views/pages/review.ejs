@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Review System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .review-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #3498db;
+        }
+
+        .vendor-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .vendor-header h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .badge.active {
+            opacity: 1;
+        }
+
+        .verified-badge {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+        }
+
+        .quality-badge {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .stats-summary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .reviews-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .reviews-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .review-category {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+
+        .review-category h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rating-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .star {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .star.active,
+        .star:hover {
+            color: #f39c12;
+            transform: scale(1.1);
+        }
+
+        .review-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+
+        .review-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .existing-reviews {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid #3498db;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .review-date {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+        }
+
+        .review-stars {
+            color: #f39c12;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .review-text {
+            color: #34495e;
+            line-height: 1.5;
+        }
+
+        .no-reviews {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .icon {
+            font-size: 1.3rem;
+        }
+
+        .current-rating {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⭐ Vendor Review System</h1>
+        
+        <div class="review-card">
+            <div class="vendor-header">
+                <h2>Rate This Vendor</h2>
+                <div class="badges">
+                    <div class="badge verified-badge" id="verifiedBadge">
+                        <span class="icon">✓</span> Verified Product Quality
+                    </div>
+                    <div class="badge quality-badge" id="qualityBadge">
+                        <span class="icon">🛡️</span> Quality Assurance
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-summary">
+                <h3>📊 Review Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="productReviewCount">0</div>
+                        <div class="stat-label">Product Quality Reviews</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="safetyReviewCount">0</div>
+                        <div class="stat-label">Clean & Safety Reviews</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="productFiveStars">0</div>
+                        <div class="stat-label">5-Star Quality Reviews</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="safetyFiveStars">0</div>
+                        <div class="stat-label">5-Star Safety Reviews</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-section">
+                <div class="review-category">
+                    <h3><span class="icon">⭐</span> Product Quality</h3>
+                    <div class="rating-display">
+                        <span>Average: <span id="productAverage">0.0</span> stars</span>
+                        <span><span id="productTotal">0</span> reviews</span>
+                    </div>
+                    <div class="current-rating" id="productCurrentRating">Select your rating</div>
+                    <div class="star-rating" id="productStars">
+                        <span class="star" onclick="setRating('product', 1)">★</span>
+                        <span class="star" onclick="setRating('product', 2)">★</span>
+                        <span class="star" onclick="setRating('product', 3)">★</span>
+                        <span class="star" onclick="setRating('product', 4)">★</span>
+                        <span class="star" onclick="setRating('product', 5)">★</span>
+                    </div>
+                    <textarea id="productReview" class="review-input" 
+                              placeholder="Share your experience with the product quality, freshness, and overall satisfaction..."></textarea>
+                    <button class="submit-btn" onclick="submitReview('product')">
+                        Submit Product Quality Review
+                    </button>
+                    
+                    <div class="existing-reviews">
+                        <h4>Recent Product Quality Reviews:</h4>
+                        <div id="productReviews">
+                            <div class="no-reviews">No reviews yet. Be the first to review!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-category">
+                    <h3><span class="icon">🧼</span> Clean & Safety</h3>
+                    <div class="rating-display">
+                        <span>Average: <span id="safetyAverage">0.0</span> stars</span>
+                        <span><span id="safetyTotal">0</span> reviews</span>
+                    </div>
+                    <div class="current-rating" id="safetyCurrentRating">Select your rating</div>
+                    <div class="star-rating" id="safetyStars">
+                        <span class="star" onclick="setRating('safety', 1)">★</span>
+                        <span class="star" onclick="setRating('safety', 2)">★</span>
+                        <span class="star" onclick="setRating('safety', 3)">★</span>
+                        <span class="star" onclick="setRating('safety', 4)">★</span>
+                        <span class="star" onclick="setRating('safety', 5)">★</span>
+                    </div>
+                    <textarea id="safetyReview" class="review-input" 
+                              placeholder="Share your experience with cleanliness, hygiene standards, and safety measures..."></textarea>
+                    <button class="submit-btn" onclick="submitReview('safety')">
+                        Submit Clean & Safety Review
+                    </button>
+                    
+                    <div class="existing-reviews">
+                        <h4>Recent Clean & Safety Reviews:</h4>
+                        <div id="safetyReviews">
+                            <div class="no-reviews">No reviews yet. Be the first to review!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let reviewData = {
+            product: {
+                reviews: [],
+                currentRating: 0,
+                fiveStarCount: 0
+            },
+            safety: {
+                reviews: [],
+                currentRating: 0,
+                fiveStarCount: 0
+            }
+        };
+
+        function setRating(category, rating) {
+            reviewData[category].currentRating = rating;
+            
+            // Update star display
+            const stars = document.querySelectorAll(`#${category}Stars .star`);
+            stars.forEach((star, index) => {
+                star.classList.toggle('active', index < rating);
+            });
+            
+            // Update current rating display
+            const ratingTexts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+            document.getElementById(`${category}CurrentRating`).textContent = 
+                `${rating} Star${rating > 1 ? 's' : ''} - ${ratingTexts[rating]}`;
+        }
+
+        function submitReview(category) {
+            const rating = reviewData[category].currentRating;
+            const reviewText = document.getElementById(`${category}Review`).value.trim();
+            
+            if (rating === 0) {
+                alert('Please select a star rating before submitting!');
+                return;
+            }
+
+            const review = {
+                rating: rating,
+                text: reviewText || 'No additional comments provided.',
+                date: new Date().toLocaleDateString(),
+                reviewer: `Customer ${Math.floor(Math.random() * 900) + 100}`
+            };
+
+            reviewData[category].reviews.push(review);
+            
+            if (rating === 5) {
+                reviewData[category].fiveStarCount++;
+            }
+
+            // Reset form
+            reviewData[category].currentRating = 0;
+            document.getElementById(`${category}Review`).value = '';
+            document.getElementById(`${category}CurrentRating`).textContent = 'Select your rating';
+            
+            // Reset stars
+            const stars = document.querySelectorAll(`#${category}Stars .star`);
+            stars.forEach(star => star.classList.remove('active'));
+            
+            updateDisplay();
+        }
+
+        function getAverageRating(reviews) {
+            if (reviews.length === 0) return 0;
+            const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+            return (sum / reviews.length).toFixed(1);
+        }
+
+        function renderReviews(reviews, containerId) {
+            const container = document.getElementById(containerId);
+            
+            if (reviews.length === 0) {
+                container.innerHTML = '<div class="no-reviews">No reviews yet. Be the first to review!</div>';
+                return;
+            }
+
+            const recentReviews = reviews.slice(-5).reverse();
+            container.innerHTML = recentReviews.map(review => `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="reviewer-name">${review.reviewer}</span>
+                        <span class="review-date">${review.date}</span>
+                    </div>
+                    <div class="review-stars">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                    <div class="review-text">${review.text}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateDisplay() {
+            // Update statistics
+            document.getElementById('productReviewCount').textContent = reviewData.product.reviews.length;
+            document.getElementById('safetyReviewCount').textContent = reviewData.safety.reviews.length;
+            document.getElementById('productFiveStars').textContent = reviewData.product.fiveStarCount;
+            document.getElementById('safetyFiveStars').textContent = reviewData.safety.fiveStarCount;
+            
+            // Update averages
+            document.getElementById('productAverage').textContent = getAverageRating(reviewData.product.reviews);
+            document.getElementById('safetyAverage').textContent = getAverageRating(reviewData.safety.reviews);
+            document.getElementById('productTotal').textContent = reviewData.product.reviews.length;
+            document.getElementById('safetyTotal').textContent = reviewData.safety.reviews.length;
+            
+            // Update badges
+            const verifiedBadge = document.getElementById('verifiedBadge');
+            const qualityBadge = document.getElementById('qualityBadge');
+            
+            verifiedBadge.classList.toggle('active', reviewData.product.fiveStarCount >= 30);
+            qualityBadge.classList.toggle('active', reviewData.safety.fiveStarCount >= 30);
+            
+            // Render reviews
+            renderReviews(reviewData.product.reviews, 'productReviews');
+            renderReviews(reviewData.safety.reviews, 'safetyReviews');
+        }
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>

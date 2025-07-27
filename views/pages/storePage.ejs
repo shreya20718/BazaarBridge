@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BazarBridge - Stores</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            gap: 30px;
+        }
+
+        .brand {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-bar {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .scan-search {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .scan-search:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .stores-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .store-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .store-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .store-image {
+            height: 220px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            color: white;
+        }
+
+        .store-content {
+            padding: 25px;
+        }
+
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .store-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .store-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .store-rating .star {
+            color: #ffc107;
+            font-size: 16px;
+        }
+
+        .store-rating .rating-number {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .store-address {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .store-address i {
+            color: #667eea;
+            width: 16px;
+        }
+
+        .store-description {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .store-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .store-info-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .store-info-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+
+        .store-info-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .store-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .store-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .store-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .store-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #333, #444);
+            color: white;
+            padding: 30px 0;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .modal-text {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-results h3 {
+            color: #6c757d;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .no-results p {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-container {
+                order: 2;
+                max-width: 100%;
+            }
+
+            .scan-search {
+                order: 3;
+            }
+
+            .stores-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .store-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .store-info-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="brand-icon"><i class="fas fa-store"></i></div>
+                BazarBridge
+            </a>
+            
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search for stores..." id="searchInput">
+                <button class="search-btn" onclick="performSearch()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            
+            <button class="scan-search" onclick="openScanModal()">
+                <i class="fas fa-camera"></i> Scan & Search
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2 class="section-title">Available Stores</h2>
+        
+        <div class="stores-grid" id="storesGrid">
+            <!-- Store cards will be dynamically generated -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <a href="register.html" class="footer-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="#" class="footer-link" onclick="openModal('contact')">
+                <i class="fas fa-phone"></i> Contact Us
+            </a>
+            <a href="#" class="footer-link" onclick="openModal('about')">
+                <i class="fas fa-info-circle"></i> About Us
+            </a>
+            <a href="#" class="footer-link" onclick="openModal('account')">
+                <i class="fas fa-user"></i> Account
+            </a>
+            <a href="#" class="footer-link" onclick="openModal('cart')">
+                <i class="fas fa-shopping-cart"></i> Cart <span id="cartCount">(0)</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle"></h3>
+            <p class="modal-text" id="modalText"></p>
+            <button class="modal-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Scan Modal -->
+    <div class="modal" id="scanModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Scan & Search</h3>
+            <p class="modal-text">Point your camera at a product to search for similar items or get ingredient information.</p>
+            <div style="background: #f8f9fa; border-radius: 10px; padding: 40px; margin: 20px 0;">
+                <div style="font-size: 60px; margin-bottom: 20px;"><i class="fas fa-camera" style="color: #667eea;"></i></div>
+                <p style="color: #6c757d;">Camera functionality would be implemented here</p>
+            </div>
+            <button class="modal-btn" onclick="closeScanModal()">Close</button>
+            <button class="modal-btn" onclick="simulateScan()">Demo Scan</button>
+        </div>
+    </div>
+
+    <script>
+        const stores = [
+            {
+                id: 1,
+                name: "Fresh Veggie Hub",
+                description: "Premium fresh vegetables sourced directly from farms. Perfect for street food vendors who need quality ingredients daily.",
+                address: "123 Market Street, Connaught Place, New Delhi - 110001",
+                icon: "🥬",
+                rating: 4.8,
+                reviewCount: 342,
+                itemCount: 156,
+                deliveryTime: "30 min",
+                tags: ["Fresh Produce", "Farm Direct", "Organic", "Daily Delivery"]
+            },
+            {
+                id: 2,
+                name: "Spice Master",
+                description: "Authentic spices and masalas for all your street food needs. From garam masala to exotic spices with traditional quality.",
+                address: "456 Spice Bazaar, Chandni Chowk, New Delhi - 110006",
+                icon: "🌶️",
+                rating: 4.9,
+                reviewCount: 567,
+                itemCount: 89,
+                deliveryTime: "25 min",
+                tags: ["Pure Spices", "Custom Blends", "Wholesale", "Traditional"]
+            },
+            {
+                id: 3,
+                name: "Golden Oil Co.",
+                description: "Premium cooking oils including mustard oil, sunflower oil, and specialty oils for authentic flavors and healthy cooking.",
+                address: "789 Oil Mills Road, Karol Bagh, New Delhi - 110005",
+                icon: "🫗",
+                rating: 4.7,
+                reviewCount: 234,
+                itemCount: 67,
+                deliveryTime: "45 min",
+                tags: ["Pure Oils", "Cold Pressed", "Bulk Supply", "Quality Assured"]
+            },
+            {
+                id: 4,
+                name: "Grain Valley",
+                description: "High-quality grains, flour, and cereals. Essential ingredients for various street food preparations with guaranteed freshness.",
+                address: "321 Grain Market, Azadpur Mandi, New Delhi - 110033",
+                icon: "🌾",
+                rating: 4.6,
+                reviewCount: 189,
+                itemCount: 134,
+                deliveryTime: "40 min",
+                tags: ["Premium Grains", "Fresh Milling", "Bulk Orders", "Nutritious"]
+            },
+            {
+                id: 5,
+                name: "Dairy Direct",
+                description: "Fresh dairy products including milk, paneer, butter, and curd delivered daily to your business with hygiene guaranteed.",
+                address: "654 Dairy Complex, Ghazipur, New Delhi - 110096",
+                icon: "🥛",
+                rating: 4.8,
+                reviewCount: 445,
+                itemCount: 78,
+                deliveryTime: "20 min",
+                tags: ["Fresh Daily", "Hygienic", "Farm Fresh", "Quick Delivery"]
+            },
+            {
+                id: 6,
+                name: "Pack Pro",
+                description: "Eco-friendly packaging solutions for street food vendors. Boxes, bags, and containers in bulk with customization options.",
+                address: "987 Industrial Area, Okhla Phase 1, New Delhi - 110020",
+                icon: "📦",
+                rating: 4.5,
+                reviewCount: 156,
+                itemCount: 234,
+                deliveryTime: "60 min",
+                tags: ["Eco-Friendly", "Customizable", "Bulk Supply", "Food Safe"]
+            },
+            {
+                id: 7,
+                name: "Street Food Essentials",
+                description: "One-stop shop for all street food ingredients. Everything you need to run your food business with competitive pricing.",
+                address: "147 Wholesale Market, Sadar Bazaar, New Delhi - 110006",
+                icon: "🍽️",
+                rating: 4.9,
+                reviewCount: 678,
+                itemCount: 289,
+                deliveryTime: "35 min",
+                tags: ["Complete Range", "Best Prices", "24/7 Support", "One Stop"]
+            },
+            {
+                id: 8,
+                name: "Quick Supply Co.",
+                description: "Fast delivery of raw materials with same-day delivery options. Perfect for urgent requirements and emergency supplies.",
+                address: "258 Express Hub, Lajpat Nagar, New Delhi - 110024",
+                icon: "⚡",
+                rating: 4.7,
+                reviewCount: 334,
+                itemCount: 198,
+                deliveryTime: "15 min",
+                tags: ["Same Day", "Express Delivery", "Emergency Supply", "Reliable"]
+            },
+            {
+                id: 9,
+                name: "Organic Paradise",
+                description: "Certified organic ingredients for health-conscious vendors. Premium quality organic vegetables, spices, and grains.",
+                address: "369 Green Valley, Vasant Kunj, New Delhi - 110070",
+                icon: "🌱",
+                rating: 4.6,
+                reviewCount: 267,
+                itemCount: 145,
+                deliveryTime: "50 min",
+                tags: ["Certified Organic", "Chemical Free", "Premium Quality", "Health Focused"]
+            },
+            {
+                id: 10,
+                name: "Frozen Foods Hub",
+                description: "Quality frozen ingredients and ready-to-cook items. Perfect for street food vendors looking for convenience and consistency.",
+                address: "741 Cold Storage Complex, Narela, New Delhi - 110040",
+                icon: "🧊",
+                rating: 4.4,
+                reviewCount: 198,
+                itemCount: 167,
+                deliveryTime: "55 min",
+                tags: ["Frozen Foods", "Ready to Cook", "Long Shelf Life", "Consistent Quality"]
+            },
+            {
+                id: 11,
+                name: "Masala Junction",
+                description: "Traditional spice blends and ready masalas. Authentic recipes passed down through generations for authentic street food taste.",
+                address: "852 Heritage Spice Market, Khari Baoli, New Delhi - 110006",
+                icon: "🥘",
+                rating: 4.8,
+                reviewCount: 423,
+                itemCount: 112,
+                deliveryTime: "30 min",
+                tags: ["Traditional Recipes", "Authentic Taste", "Heritage Quality", "Time Tested"]
+            },
+            {
+                id: 12,
+                name: "Beverage Supplies",
+                description: "Complete range of beverage ingredients, syrups, and concentrates. Everything needed for refreshing drinks and lassis.",
+                address: "963 Beverage Park, Rohini, New Delhi - 110085",
+                icon: "🥤",
+                rating: 4.5,
+                reviewCount: 289,
+                itemCount: 93,
+                deliveryTime: "40 min",
+                tags: ["Beverage Syrups", "Concentrates", "Drink Mixes", "Refreshing"]
+            }
+        ];
+
+        // Get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Render stores
+        function renderStores(storesToRender = stores) {
+            const storesGrid = document.getElementById('storesGrid');
+            storesGrid.innerHTML = '';
+
+            if (storesToRender.length === 0) {
+                storesGrid.innerHTML = `
+                    <div class="no-results">
+                        <h3>No stores found</h3>
+                        <p>Try searching for different keywords or browse all available stores</p>
+                    </div>
+                `;
+                return;
+            }
+
+            storesToRender.forEach(store => {
+                const storeCard = document.createElement('div');
+                storeCard.className = 'store-card';
+                storeCard.innerHTML = `
+                    <div class="store-image">
+                        ${store.icon}
+                    </div>
+                    <div class="store-content">
+                        <div class="store-header">
+                            <div>
+                                <h3 class="store-name">${store.name}</h3>
+                            </div>
+                            <div class="store-rating">
+                                <i class="fas fa-star star"></i>
+                                <span class="rating-number">${store.rating}</span>
+                                <span class="rating-number">(${store.reviewCount})</span>
+                            </div>
+                        </div>
+                        
+                        <div class="store-address">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${store.address}</span>
+                        </div>
+                        
+                        <p class="store-description">${store.description}</p>
+                        
+                        <div class="store-info">
+                            <div class="store-info-item">
+                                <span class="store-info-number">${store.itemCount}</span>
+                                <span class="store-info-label">Items</span>
+                            </div>
+                            <div class="store-info-item">
+                                <span class="store-info-number">${store.deliveryTime}</span>
+                                <span class="store-info-label">Delivery</span>
+                            </div>
+                            <div class="store-info-item">
+                                <span class="store-info-number">✅</span>
+                                <span class="store-info-label">Available</span>
+                            </div>
+                        </div>
+                        
+                        <div class="store-tags">
+                            ${store.tags.map(tag => `<span class="store-tag">${tag}</span>`).join('')}
+                        </div>
+                        
+                        <button class="store-btn" onclick="visitStore(${store.id})">
+                            <i class="fas fa-shopping-bag"></i> View Items
+                        </button>
+                    </div>
+                `;
+                storesGrid.appendChild(storeCard);
+            });
+        }
+
+        // Search functionality
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!query) {
+                renderStores(stores);
+                return;
+            }
+
+            const searchResults = stores.filter(store => 
+                store.name.toLowerCase().includes(query) ||
+                store.description.toLowerCase().includes(query) ||
+                store.address.toLowerCase().includes(query) ||
+                store.tags.some(tag => tag.toLowerCase().includes(query))
+            );
+
+            renderStores(searchResults);
+        }
+
+        // Visit store function
+        function visitStore(storeId) {
+            // This would redirect to individual store page
+            window.location.href = `store-items.html?store=${storeId}`;
+        }
+
+        // Modal functions
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalText = document.getElementById('modalText');
+
+            const content = {
+                contact: {
+                    title: 'Contact Us',
+                    text: 'Phone: +91 98765 43210\nEmail: support@vendormart.com\nAddress: 123 Market Street, Mumbai, India\n\nCustomer support available 24/7!'
+                },
+                about: {
+                    title: 'About VendorMart',
+                    text: 'We are dedicated to supporting street food vendors by providing easy access to quality raw materials. Our platform connects vendors directly with trusted suppliers, ensuring fresh ingredients and competitive prices.'
+                },
+                account: {
+                    title: 'Your Account',
+                    text: 'Sign in to access your personalized dashboard, track orders, manage your supplier preferences, and get exclusive deals.'
+                },
+                cart: {
+                    title: 'Shopping Cart',
+                    text: 'Your cart is empty. Visit our stores to start shopping!'
+                }
+            };
+
+            const info = content[type] || content.contact;
+            modalTitle.textContent = info.title;
+            modalText.textContent = info.text;
+            modalText.style.whiteSpace = 'pre-line';
+            
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        // Scan modal functions
+        function openScanModal() {
+            document.getElementById('scanModal').classList.add('show');
+        }
+
+        function closeScanModal() {
+            document.getElementById('scanModal').classList.remove('show');
+        }
+
+        function simulateScan() {
+            closeScanModal();
+            document.getElementById('searchInput').value = 'tomato';
+            performSearch();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('scanModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeScanModal();
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a search query in URL
+            const searchQuery = getUrlParameter('search');
+            if (searchQuery) {
+                document.getElementById('searchInput').value = searchQuery;
+                performSearch();
+            } else {
+                renderStores();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Supplier Analytics</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f7f8fc, #e6ecf5);
+      color: #333;
+    }
+
+    .dashboard {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 2fr 1fr;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .kpis {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .kpi {
+      flex: 1 1 45%;
+      background: #f0f4fa;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .kpi h2 {
+      font-size: 24px;
+      color: #222;
+    }
+
+    .kpi p {
+      margin: 0;
+      color: #666;
+    }
+
+    #pieChart {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Left Side: KPI Cards -->
+    <div class="card">
+      <div class="title">Supplier: <strong id="supplierName">Supplier ABC</strong></div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <h2 id="totalSales">₹ 0</h2>
+          <p>Total Sales</p>
+        </div>
+        <div class="kpi">
+          <h2 id="totalProfit">₹ 0</h2>
+          <p>Total Profit</p>
+        </div>
+        <div class="kpi">
+          <h2 id="totalLoss">₹ 0</h2>
+          <p>Total Loss</p>
+        </div>
+        <div class="kpi">
+          <h2 id="totalMargin">₹ 0</h2>
+          <p>Total Margin</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Pie Chart -->
+    <div class="card">
+      <div class="title">Profit vs Loss</div>
+      <canvas id="pieChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // Dummy data (replace with Firebase live values)
+    const supplierData = {
+      name: "Supplier ABC",
+      totalSales: 150000,
+      totalProfit: 40000,
+      totalLoss: 5000
+    };
+
+    // Update DOM
+    document.getElementById("supplierName").textContent = supplierData.name;
+    document.getElementById("totalSales").textContent = `₹ ${supplierData.totalSales}`;
+    document.getElementById("totalProfit").textContent = `₹ ${supplierData.totalProfit}`;
+    document.getElementById("totalLoss").textContent = `₹ ${supplierData.totalLoss}`;
+    document.getElementById("totalMargin").textContent = `₹ ${supplierData.totalProfit - supplierData.totalLoss}`;
+
+    // Draw Pie Chart
+    const ctx = document.getElementById("pieChart").getContext("2d");
+    const pieChart = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: ["Profit", "Loss"],
+        datasets: [{
+          data: [supplierData.totalProfit, supplierData.totalLoss],
+          backgroundColor: ["#4CAF50", "#F44336"],
+          hoverOffset: 20
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom"
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.label}: ₹ ${context.parsed}`;
+              }
+            }
+          },
+          title: {
+            display: false
+          }
+        }
+      }
+    });
+  </script>
+  <footer>
+    <!-- Navigation Footer -->
+<footer style="background: linear-gradient(to right, #fce1ef, #dde7fd); margin-top: 60px; padding: 20px 30px; border-radius: 25px 25px 0 0;">
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; font-size: 15px; font-weight: 500;">
+    <a href="home.html" style="text-decoration: none; color: #5c3c6b; transition: 0.3s;">Home</a>
+    <a href="about.html" style="text-decoration: none; color: #5c3c6b; transition: 0.3s;">About Us</a>
+    <a href="contact.html" style="text-decoration: none; color: #5c3c6b; transition: 0.3s;">Contact Us</a>
+    <a href="account.html" style="text-decoration: none; color: #5c3c6b; transition: 0.3s;">Account</a>
+    <a href="store.html" style="text-decoration: none; color: #5c3c6b; transition: 0.3s;">Store</a>
+  </div>
+</footer>
+
+  </footer>
+
+</body>
+</html>
+

@@ -1,0 +1,514 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Supplier Dashboard</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(to right, #ffeaf4, #e8f0ff);
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+        padding: 20px 40px;
+        border-bottom: 2px solid #fff;
+        border-radius: 0 0 25px 25px;
+      }
+
+      .left-buttons {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      header a, header button {
+        background: white;
+        color: #b469bc;
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      header a:hover, header button:hover {
+        background: #fde4ff;
+      }
+
+      #dropdown {
+        display: none;
+        position: absolute;
+        right: 40px;
+        top: 70px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        width: 260px;
+        z-index: 1000;
+        overflow: hidden;
+      }
+
+      #dropdown div {
+        padding: 18px;
+      }
+
+      #dropdown h3 {
+        color: #b469bc;
+        margin-bottom: 12px;
+      }
+
+      #dropdown p {
+        margin: 6px 0;
+        font-size: 14px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #b469bc;
+        margin: 30px 0 20px;
+      }
+
+      form {
+        background: #ffffff;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        font-weight: 500;
+      }
+
+      input[type="text"], input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+
+      .unit-label {
+        margin-left: 8px;
+        color: #555;
+        font-size: 14px;
+      }
+
+      button[type="submit"] {
+        background: #fbc2eb;
+        color: #5c3c6b;
+        font-weight: bold;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      button[type="submit"]:hover {
+        background: #f9bfe0;
+      }
+
+      #cardContainer {
+        max-width: 700px;
+        margin: 30px auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .item-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 16px;
+        color: #5c3c6b;
+      }
+
+      .item-card h3 {
+        margin: 0;
+        color: #a64d79;
+      }
+
+      .item-card span {
+        font-size: 14px;
+        color: #666;
+      }
+
+  .footer {
+    background: linear-gradient(135deg, #333, #444);
+    color: white;
+    padding: 30px 0;
+    margin-top: auto;
+  }
+
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+
+      .f-info {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      .f-info-social a {
+        color: #5c3c6b;
+        text-decoration: none;
+        margin: 0 8px;
+        font-size: 18px;
+      }
+
+      .f-info-brand {
+        font-weight: bold;
+        margin: 10px 0;
+      }
+
+      .f-info-links a {
+        color: #5c3c6b;
+        text-decoration: none;
+        margin: 0 8px;
+      }
+
+      .f-info-links a:hover,
+      .f-info-social a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 600px) {
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .f-info {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+
+      .price-box {
+    margin-bottom: 20px;
+  }
+
+  .price-flex {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .price-input,
+  .unit-input {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    flex: 1;
+  }
+
+  .price-separator {
+    font-size: 18px;
+    font-weight: bold;
+    color: #5c3c6b;
+  }
+
+  .category-box {
+    margin-bottom: 20px;
+  }
+
+  .category-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    background: white;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    resize: vertical;
+  }
+
+  .product-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.item-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  width: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-top {
+  background: linear-gradient(to right, #7b2ff7, #f107a3);
+  padding: 30px;
+  font-size: 48px;
+  text-align: center;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-body h3 {
+  margin: 0 0 10px;
+}
+
+.card-body p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.info span {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f2f2f2;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.quantity button {
+  background: white;
+  border: none;
+  font-size: 20px;
+  padding: 5px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.add-cart {
+  background: #8056f1;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
+    </style>
+
+    <!-- Font Awesome CDN for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+
+    <!-- Header Section -->
+    <header>
+      <div class="left-buttons">
+        <a href="supplier_antcs.html">📊 View My Analytics</a>
+      </div>
+
+      <div style="position: relative;">
+        <button onclick="toggleDropdown()">👤 Supplier Menu ▼</button>
+        <div id="dropdown">
+          <div>
+            <h3>👤 Supplier Profile</h3>
+            <p><strong>Name:</strong> Shiv Traders</p>
+            <p><strong>Email:</strong> shivtraders@example.com</p>
+            <p><strong>Supplier ID:</strong> ST1023</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Title -->
+    <h1>Supplier Dashboard</h1>
+
+    <!-- Form -->
+  <form id="itemForm">
+    <label>Item Name:</label>
+    <input type="text" id="itemName" required>
+
+    <h2>Set Your Product Price</h2>
+    <div class="price-box">
+      <label for="priceInput" class="price-label">Price:</label>
+      <div class="price-flex">
+        <input type="number" id="priceInput" class="price-input" placeholder="Enter amount" min="0" />
+        <span class="price-separator">/</span>
+        <input type="text" id="unitInput" class="unit-input" placeholder="kg / g / liter" />
+      </div>
+    </div>
+
+  <div class="category-box">
+    <label for="categorySelect" class="price-label">Category:</label>
+    <select id="categorySelect" class="category-select" required>
+      <option value="" disabled selected>Select Category</option>
+      <option value="Vegetables">Vegetables</option>
+      <option value="Fruits">Fruits</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+    <label>Quantity Available:</label>
+    <input type="number" id="itemQuantity" required>
+
+  <label for="itemDescription">Description:</label>
+  <textarea id="itemDescription" rows="4" placeholder="Enter description of the item..." required></textarea>
+
+  <button type="submit">Add Item</button>
+  </form>
+
+    <!-- Cards Container -->
+    <div class="product-container" id="productContainer">
+  <!-- Cards will be injected here -->
+</div>
+
+
+
+    <!-- Footer Section -->
+  <footer class="footer">
+    <div class="footer-container">
+      <a href="home.html" class="footer-link">
+        <i class="fas fa-home"></i> Home
+      </a>
+      <a href="contact.html" class="footer-link">
+        <i class="fas fa-phone"></i> Contact Us
+      </a>
+      <a href="about.html" class="footer-link">
+        <i class="fas fa-info-circle"></i> About Us
+      </a>
+      <a href="account.html" class="footer-link">
+        <i class="fas fa-user"></i> Account
+      </a>
+      <a href="store.html" class="footer-link">
+        <i class="fas fa-shopping-cart"></i> Store
+        <span id="cartCount">(0)</span>
+      </a>
+    </div>
+  </footer>
+
+
+<script>
+  function toggleDropdown() {
+    const dropdown = document.getElementById('dropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  }
+
+  const form = document.getElementById('itemForm');
+  const container = document.getElementById('productContainer');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('itemName').value;
+    const price = document.getElementById('priceInput').value;
+    const unit = document.getElementById('unitInput').value;
+    const quantity = document.getElementById('itemQuantity').value;
+    const description = document.getElementById('itemDescription').value;
+    const category = document.getElementById('categorySelect').value;
+
+    // Placeholder emoji based on category
+    let emoji = "📦";
+    if (category.toLowerCase() === "vegetables") emoji = "🥦";
+    else if (category.toLowerCase() === "fruits") emoji = "🍎";
+
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML = `
+      <div class="card-top">${emoji}</div>
+      <div class="card-body">
+        <h3>${name}</h3>
+        <p>${description}</p>
+        <div class="info">
+          <div><strong>${category}</strong><br><span>Category</span></div>
+          <div><input type="checkbox" ${quantity > 0 ? "checked" : ""} disabled><br><span>Stock</span></div>
+          <div><strong>${unit}</strong><br><span>Unit</span></div>
+        </div>
+        <div class="quantity">
+          <button class="decrease">-</button>
+          <span class="qty">0.5 ${unit}</span>
+          <button class="increase">+</button>
+        </div>
+        <button class="add-cart">
+          🛒 Add to Cart - ₹${(price * 0.5).toFixed(2)}
+        </button>
+      </div>
+    `;
+    container.appendChild(card);
+
+    form.reset(); // Clear the form
+  });
+</script>
+</body>
+</html>

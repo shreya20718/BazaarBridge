@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In / Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .toggle-container {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 50px;
+            padding: 4px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .toggle-btn.active {
+            color: white;
+        }
+
+        .toggle-btn:not(.active) {
+            color: #6c757d;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50px;
+            transition: transform 0.3s ease;
+            z-index: 1;
+        }
+
+        .toggle-slider.signup {
+            transform: translateX(100%);
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .switch-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .switch-link:hover {
+            color: #764ba2;
+        }
+
+        .form-container {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.4s ease;
+        }
+
+        .form-container.fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .success-message, .error-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message.show, .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-container {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                margin: 10px;
+                padding: 30px 25px;
+            }
+            
+            .form-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="toggle-container">
+            <button class="toggle-btn active" id="signinToggle">Sign In</button>
+            <button class="toggle-btn" id="signupToggle">Sign Up</button>
+            <div class="toggle-slider" id="toggleSlider"></div>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <div class="form-container" id="formContainer">
+            <h2 class="form-title" id="formTitle">Welcome Back</h2>
+            
+            <form id="authForm" method="POST" action="/login">
+                <div class="form-group" id="nameGroup" style="display: none;">
+                    <input type="text" class="form-input" name="name" id="name" placeholder="Full Name" />
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" class="form-input" name="email" id="email" placeholder="Email Address" required />
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" class="form-input" name="password" id="password" placeholder="Password" required />
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+            </form>
+            
+            <p class="switch-text" id="switchText">
+                Don't have an account? <a href="#" class="switch-link" id="switchLink" >Sign up here</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let isSignUpMode = false;
+        //const users = []; // In-memory storage for demo purposes
+        
+        // DOM elements
+        const signinToggle = document.getElementById('signinToggle');
+        const signupToggle = document.getElementById('signupToggle');
+        const toggleSlider = document.getElementById('toggleSlider');
+        const formContainer = document.getElementById('formContainer');
+        const formTitle = document.getElementById('formTitle');
+        const nameGroup = document.getElementById('nameGroup');
+        const submitBtn = document.getElementById('submitBtn');
+        const switchText = document.getElementById('switchText');
+        const switchLink = document.getElementById('switchLink');
+        const authForm = document.getElementById('authForm');
+        const messageContainer = document.getElementById('messageContainer');
+        
+        // Toggle between sign in and sign up
+        function toggleMode(mode) {
+            formContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                isSignUpMode = mode === 'signup';
+                
+                // Update toggle buttons
+                signinToggle.classList.toggle('active', !isSignUpMode);
+                signupToggle.classList.toggle('active', isSignUpMode);
+                toggleSlider.classList.toggle('signup', isSignUpMode);
+                
+                // Update form content
+                if (isSignUpMode) {
+                    formTitle.textContent = 'Create Account';
+                    nameGroup.style.display = 'block';
+                    submitBtn.textContent = 'Sign Up';
+                    switchText.innerHTML = 'Already have an account? <a href="#" class="switch-link" id="switchLink">Sign in here</a>';
+                } else {
+                    formTitle.textContent = 'Welcome Back';
+                    nameGroup.style.display = 'none';
+                    submitBtn.textContent = 'Sign In';
+                    switchText.innerHTML = 'Don\'t have an account? <a href="#" class="switch-link" id="switchLink">Sign up here</a>';
+                }
+
+                     authForm.action = isSignUpMode ? '/signup' : '/login';
+                authForm.method = 'POST';
+                
+                // Re-attach event listener to new switch link
+                document.getElementById('switchLink').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleMode(isSignUpMode ? 'signin' : 'signup');
+                });
+                
+                // Clear form
+                authForm.reset();
+                clearMessages();
+                
+                formContainer.classList.remove('fade-out');
+            }, 200);
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            messageContainer.innerHTML = `<div class="${type}-message show">${message}</div>`;
+            setTimeout(() => {
+                const messageEl = messageContainer.querySelector(`.${type}-message`);
+                if (messageEl) {
+                    messageEl.classList.remove('show');
+                    setTimeout(() => {
+                        messageContainer.innerHTML = '';
+                    }, 300);
+                }
+            }, 3000);
+        }
+        
+        // Clear messages
+        function clearMessages() {
+            messageContainer.innerHTML = '';
+        }
+        
+        // Form submission
+        function handleSubmit(e) {
+            e.preventDefault();
+            clearMessages();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
+            
+        //     if (isSignUpMode) {
+        //         // Sign up logic
+        //         if (!name.trim()) {
+        //             showMessage('Please enter your full name', 'error');
+        //             return;
+        //         }
+                
+        //         if (users.find(user => user.email === email)) {
+        //             showMessage('Email already exists. Please sign in instead.', 'error');
+        //             return;
+        //         }
+                
+        //         if (password.length < 6) {
+        //             showMessage('Password must be at least 6 characters long', 'error');
+        //             return;
+        //         }
+                
+        //         // Add user to storage
+        //         users.push({ name: name.trim(), email, password });
+        //         showMessage(`Account created successfully! Welcome, ${name.trim()}!`, 'success');
+                
+        //         // Auto-switch to sign in after successful signup
+        //         setTimeout(() => {
+        //             toggleMode('signin');
+        //         }, 2000);
+                
+        //     } else {
+        //         // Sign in logic
+        //         const user = users.find(u => u.email === email && u.password === password);
+                
+        //         if (user) {
+        //             showMessage(`Welcome back, ${user.name}!`, 'success');
+        //         } else {
+        //             showMessage('Invalid email or password. Please try again.', 'error');
+        //         }
+        //     }
+        // }
+        }
+        // Event listeners
+        signinToggle.addEventListener('click', () => toggleMode('signin'));
+        signupToggle.addEventListener('click', () => toggleMode('signup'));
+        //authForm.addEventListener('submit', handleSubmit);
+        
+        // Initial switch link event listener
+        switchLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleMode(isSignUpMode ? 'signin' : 'signup');
+        });
+        
+        // Add some demo users for testing
+        users.push(
+            { name: 'John Doe', email: 'john@example.com', password: 'password123' },
+            { name: 'Jane Smith', email: 'jane@example.com', password: 'password123' }
+        );
+    </script>
+</body>
+</html>
+
+        
