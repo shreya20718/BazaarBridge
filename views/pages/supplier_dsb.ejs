@@ -375,9 +375,9 @@
 
     <!-- Header Section -->
     <header>
-      <div class="left-buttons">
-        <a href="supplier_antcs.html">📊 View My Analytics</a>
-      </div>
+     <div class="left-buttons">
+  <button onclick="window.location.href='/suppanalytics'">📊 View My Analytics</button>
+</div>
 
       <div style="position: relative;">
         <button onclick="toggleDropdown()">👤 Supplier Menu ▼</button>
@@ -396,23 +396,23 @@
     <h1>Supplier Dashboard</h1>
 
     <!-- Form -->
-  <form id="itemForm">
+  <form id="itemForm" action="/add-supplier-item" method="POST">
     <label>Item Name:</label>
-    <input type="text" id="itemName" required>
+    <input type="text" id="itemName" name="name" required>
 
     <h2>Set Your Product Price</h2>
     <div class="price-box">
       <label for="priceInput" class="price-label">Price:</label>
       <div class="price-flex">
-        <input type="number" id="priceInput" class="price-input" placeholder="Enter amount" min="0" />
+        <input type="number" id="priceInput" name="price" class="price-input" placeholder="Enter amount" min="0" />
         <span class="price-separator">/</span>
-        <input type="text" id="unitInput" class="unit-input" placeholder="kg / g / liter" />
+        <input type="text" id="unitInput" name="unit" class="unit-input" placeholder="kg / g / liter" />
       </div>
     </div>
 
   <div class="category-box">
     <label for="categorySelect" class="price-label">Category:</label>
-    <select id="categorySelect" class="category-select" required>
+    <select id="categorySelect" name="category" class="category-select" required>
       <option value="" disabled selected>Select Category</option>
       <option value="Vegetables">Vegetables</option>
       <option value="Fruits">Fruits</option>
@@ -421,17 +421,40 @@
   </div>
 
     <label>Quantity Available:</label>
-    <input type="number" id="itemQuantity" required>
+    <input type="number" id="itemQuantity" name="stockQuantity" required>
 
   <label for="itemDescription">Description:</label>
-  <textarea id="itemDescription" rows="4" placeholder="Enter description of the item..." required></textarea>
+  <textarea id="itemDescription" name="description" rows="4" placeholder="Enter description of the item..." required></textarea>
 
   <button type="submit">Add Item</button>
   </form>
 
     <!-- Cards Container -->
     <div class="product-container" id="productContainer">
-  <!-- Cards will be injected here -->
+      <% if (typeof products !== 'undefined' && products.length > 0) { %>
+        <% products.forEach(function(product) { %>
+          <div class="item-card">
+            <div class="card-top"><%= product.category === 'Vegetables' ? '🥦' : (product.category === 'Fruits' ? '🍎' : '📦') %></div>
+            <div class="card-body">
+              <h3><%= product.name %></h3>
+              <p><%= product.description %></p>
+              <div class="info">
+                <div><strong><%= product.category %></strong><br><span>Category</span></div>
+                <div><input type="checkbox" <%= product.stockQuantity > 0 ? 'checked' : '' %> disabled><br><span>Stock</span></div>
+                <div><strong><%= product.unit %></strong><br><span>Unit</span></div>
+              </div>
+              <div class="quantity">
+                <span class="qty"><%= product.stockQuantity %> <%= product.unit %></span>
+              </div>
+              <button class="add-cart">
+                🛒 Add to Cart - ₹<%= product.price %>
+              </button>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div>No products added yet.</div>
+      <% } %>
 </div>
 
 
@@ -465,50 +488,7 @@
     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
   }
 
-  const form = document.getElementById('itemForm');
-  const container = document.getElementById('productContainer');
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const name = document.getElementById('itemName').value;
-    const price = document.getElementById('priceInput').value;
-    const unit = document.getElementById('unitInput').value;
-    const quantity = document.getElementById('itemQuantity').value;
-    const description = document.getElementById('itemDescription').value;
-    const category = document.getElementById('categorySelect').value;
-
-    // Placeholder emoji based on category
-    let emoji = "📦";
-    if (category.toLowerCase() === "vegetables") emoji = "🥦";
-    else if (category.toLowerCase() === "fruits") emoji = "🍎";
-
-    const card = document.createElement("div");
-    card.className = "item-card";
-    card.innerHTML = `
-      <div class="card-top">${emoji}</div>
-      <div class="card-body">
-        <h3>${name}</h3>
-        <p>${description}</p>
-        <div class="info">
-          <div><strong>${category}</strong><br><span>Category</span></div>
-          <div><input type="checkbox" ${quantity > 0 ? "checked" : ""} disabled><br><span>Stock</span></div>
-          <div><strong>${unit}</strong><br><span>Unit</span></div>
-        </div>
-        <div class="quantity">
-          <button class="decrease">-</button>
-          <span class="qty">0.5 ${unit}</span>
-          <button class="increase">+</button>
-        </div>
-        <button class="add-cart">
-          🛒 Add to Cart - ₹${(price * 0.5).toFixed(2)}
-        </button>
-      </div>
-    `;
-    container.appendChild(card);
-
-    form.reset(); // Clear the form
-  });
+  // Remove or comment out the JS that only updates the UI locally
 </script>
 </body>
 </html>

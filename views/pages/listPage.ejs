@@ -783,7 +783,49 @@
         </div>
         
         <div class="items-grid" id="itemsGrid">
-            <!-- Item cards will be dynamically generated -->
+            <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                <% products.forEach(function(item) { %>
+                    <div class="item-card">
+                        <div class="item-image">
+                            <%= item.category === 'Vegetables' ? '🥦' : (item.category === 'Fruits' ? '🍎' : '📦') %>
+                        </div>
+                        <div class="item-content">
+                            <div class="item-header">
+                                <div>
+                                    <h3 class="item-name"><%= item.name %></h3>
+                                </div>
+                                <div class="item-price">₹<%= item.price %>/<%= item.unit %></div>
+                            </div>
+                            <p class="item-description"><%= item.description %></p>
+                            <div class="item-details">
+                                <div class="item-detail">
+                                    <span class="detail-value"><%= item.category %></span>
+                                    <span class="detail-label">Category</span>
+                                </div>
+                                <div class="item-detail">
+                                    <span class="detail-value"><%= item.stockQuantity > 0 ? '✅' : '❌' %></span>
+                                    <span class="detail-label">Stock</span>
+                                </div>
+                                <div class="item-detail">
+                                    <span class="detail-value"><%= item.unit %></span>
+                                    <span class="detail-label">Unit</span>
+                                </div>
+                            </div>
+                            <div class="quantity-controls">
+                                <span class="quantity-display"><%= item.stockQuantity %> <%= item.unit %></span>
+                            </div>
+                            <button class="add-to-cart-btn">
+                                <i class="fas fa-cart-plus"></i> Add to Cart - ₹<%= item.price %>
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-results">
+                    <h3>No items found</h3>
+                    <p>No products available for this store yet.</p>
+                </div>
+            <% } %>
         </div>
     </main>
 
@@ -883,7 +925,7 @@
             <a href="#" class="footer-link" onclick="openModal('about')">
                 <i class="fas fa-info-circle"></i> About Us
             </a>
-            <a href="#" class="footer-link" onclick="openModal('account')">
+            <a href="/account" class="footer-link" onclick="openModal('account')">
                 <i class="fas fa-user"></i> Account
             </a>
             <button class="footer-link" onclick="openCartModal()" style="background: none; border: none; color: white; text-decoration: none; font-weight: 600; padding: 10px 20px; border-radius: 25px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; cursor: pointer;">

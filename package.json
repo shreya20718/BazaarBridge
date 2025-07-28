@@ -14,10 +14,12 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.1",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "http-status": "^2.1.0",
-    "mongoose": "^8.16.5"
+    "mongoose": "^8.16.5",
+    "multer": "^2.0.2"
   }
 }

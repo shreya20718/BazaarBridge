@@ -1,4 +1,6 @@
 // app.js
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import path from 'path';
 import http from 'http';
@@ -9,12 +11,14 @@ import User from './models/User.js';
 import bcrypt from 'bcrypt'; // Only if you're using ES modules
 import session from 'express-session';
 import Supplier from "./models/registrationDetails.js"
-import Store from "./models/store.js"
+import AddMyStore from "./models/addmystore.js";
 import Product from "./models/product.js";
 import Cart from "./models/cart.js";
 import Review from "./models/review.js"
 import Todo from"./models/review.js"
 import Order from "./models/order.js"
+import multer from 'multer';
+import Store from "./models/store.js";
 
 
 // Setup __dirname equivalent for ESM
@@ -31,7 +35,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(session({
-  secret: 'yourSecretKey', // Replace with a strong secret in production
+  secret: process.env.SESSION_SECRET || 'fallback-secret-key', // Replace with a strong secret in production
   resave: false,
   saveUninitialized: true
 }));
@@ -43,9 +47,12 @@ app.get('/', (req, res) => {
 
 app.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
+  console.log('Signup attempt:', { name, email }); // Log signup attempt
+  
   try {
     const existing = await User.findOne({ email });
     if (existing) {
+      console.log('User already exists:', email);
       return res.send('User already exists');
     }
 
@@ -53,10 +60,11 @@ app.post('/signup', async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword });
 
     await newUser.save();
+    console.log('User saved successfully:', { id: newUser._id, name, email });
   
     res.redirect("/");
   } catch (err) {
-    console.error(err);
+    console.error('Signup error:', err);
     res.status(500).send('Something went wrong');
   }
 });
@@ -99,6 +107,46 @@ app.get("/supplierdetail",(req,res)=>{
   res.render("pages/supplier")
 })
 
+
+app.get("/account", async (req, res) => {
+  try {
+    // Check if user is logged in
+    if (!req.session.userId) {
+      return res.redirect('/');
+    }
+
+    // Fetch user data from database
+    const user = await User.findById(req.session.userId);
+    
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.render('pages/studentProfile', { user });
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).send('Internal server error');
+  }
+})
+
+// Test route to check all users in database
+app.get("/test-users", async (req, res) => {
+  try {
+    const users = await User.find({}).select('-password'); // Exclude password for security
+    res.json({
+      message: 'All users in database',
+      count: users.length,
+      users: users
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Database error' });
+  }
+})
+
+app.get("/supplierdash",(req,res)=>{
+  res.render("pages/supplier_dsb")
+})
 
 
 app.post('/supplierlist', async (req, res) => {
@@ -199,6 +247,12 @@ app.post('/supplierlist', async (req, res) => {
     }
 });
 
+app.get("/suppanalytics",(req,res)=>{
+  res.render("pages/suppanalytics");
+})
+
+
+
 app.get("/partnership",(req,res)=>{
     res.render("pages/partnership");
 })
@@ -226,8 +280,8 @@ app.post('/supplierlogin', async (req, res) => {
     // Store supplier ID in session
     req.session.supplierId = supplier._id;
 
-    // Redirect to supplier profile page
-    res.redirect('/supplier/profile');
+    // Redirect to add store page after login
+    res.redirect('/add-store');
   } catch (err) {
     console.error(err);
     res.status(500).render('pages/supplierLogin', { error: 'Internal server error' });
@@ -252,7 +306,10 @@ app.get('/supplier/profile', async (req, res) => {
 
 app.get("/stores.html", async (req, res) => {
   try {
-    const stores = await Store.find({});
+    const addMyStores = await AddMyStore.find({});
+    const legacyStores = await Store.find({});
+    // Merge both arrays for display
+    const stores = [...addMyStores, ...legacyStores];
     res.render("pages/storePage", { stores });
   } catch (err) {
     console.error(err);
@@ -260,23 +317,133 @@ app.get("/stores.html", async (req, res) => {
   }
 });
 
+// Update /add-store GET route
+app.get('/add-store', async (req, res) => {
+  const supplierId = req.session.supplierId;
+  if (supplierId) {
+    // Ensure supplierId is an ObjectId for the query
+    const supplierObjectId = typeof supplierId === 'string' ? new mongoose.Types.ObjectId(supplierId) : supplierId;
+    const existingStore = await AddMyStore.findOne({ supplierId: supplierObjectId });
+    if (existingStore) {
+      const products = await Product.find({});
+      return res.render('pages/supplier_dsb', { products });
+    }
+  }
+  res.render('pages/addStore');
+});
 
+// Add this route to handle store creation
+const upload = multer({ dest: 'public/uploads/' }); // You can configure storage as needed
+
+// Update /add-store POST route
+app.post('/add-store', upload.single('storeImage'), async (req, res) => {
+    console.log('BODY:', req.body);
+  console.log('FILE:', req.file);
+  try {
+   const {
+  storeName,
+  storeAddress,
+  description,
+  maxDeliveryTime,
+  customTime,
+  categories,
+  deliveryOptions
+} = req.body;
+
+let imagePath = '';
+if (req.file) {
+  imagePath = '/uploads/' + req.file.filename;
+}
+    
+    // Handle categories and deliveryOptions as arrays
+    let categoryArr = [];
+    if (Array.isArray(categories)) {
+      categoryArr = categories;
+    } else if (categories) {
+      categoryArr = [categories];
+    }
+    if (typeof categories === 'string' && categories.includes(',')) {
+      categoryArr = categories.split(',').map(c => c.trim());
+    }
+    let deliveryArr = [];
+    if (Array.isArray(deliveryOptions)) {
+      deliveryArr = deliveryOptions;
+    } else if (deliveryOptions) {
+      deliveryArr = [deliveryOptions];
+    }
+
+    // Handle image upload
+    // let imagepath = '';
+    // if (req.file) {
+    //   imagePath = '/uploads/' + req.file.filename;
+    // }
+
+    // Improved newId logic: only consider stores with a valid id
+
+    const lastStore = await AddMyStore.findOne({ id: { $ne: null } }).sort({ id: -1 });
+    let newId = 1;
+    if (lastStore && typeof lastStore.id === 'number' && !isNaN(lastStore.id)) {
+      newId = lastStore.id + 1;
+    }
+    if (!newId || isNaN(newId)) {
+      throw new Error('Failed to generate a unique store id');
+    }
+
+    const newStore = new AddMyStore({
+      id: newId,
+      name: storeName,
+      address: storeAddress,
+      description: description || '',
+      category: categoryArr[0] || 'Grocery',
+       image: imagePath,
+      icon: '',
+      tags: categoryArr,
+      deliveryTime: customTime || maxDeliveryTime,
+      itemCount: 0,
+      rating: 0,
+      reviewCount: 0,
+      supplierId: req.session.supplierId,
+      // image: imagePath
+    });
+    await newStore.save();
+    console.log('New store saved:', newStore);
+    // After saving, redirect to supplier dashboard
+    const products = await Product.find({});
+    res.render('pages/supplier_dsb', { products });
+  } catch (err) {
+    console.error('Error adding store:', err);
+    res.status(500).send('Error adding store');
+  }
+});
+
+
+
+app.get("/chatbot",(req,res)=>{
+  res.render("pages/chatbot");
+})
 
 // Route to handle store-items.html?store=1
 app.get('/store-items.html', async (req, res) => {
     try {
         const storeId = req.query.store; // e.g., ?store=1
-        const store = await Store.findOne({ id: parseInt(storeId) });
-
+        // Try to find in AddMyStore first
+        let store = await AddMyStore.findOne({ id: parseInt(storeId) });
+        // If not found, try in legacy Store model
+        if (!store) {
+            store = await Store.findOne({ id: parseInt(storeId) });
+        }
         if (!store) {
             return res.status(404).send("Store not found");
         }
-
+        // Fetch products for this store (only for AddMyStore, as legacy stores may not have products)
+        let products = [];
+        if (store._id) {
+            products = await Product.find({ storeId: store._id });
+        }
         // Fetch reviews for this store
         const reviews = await Review.find({ storeId: store._id }).populate('userId', 'name').sort({ createdAt: -1 });
-
-        // Render EJS page and pass the store data and reviews
-        res.render('pages/listPage', { store, reviews });  // Renders views/pages/listPage.ejs
+        // Render EJS page and pass the store data, products, and reviews
+        res.render('pages/listPage', { store, products, reviews });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error loading store details');
@@ -325,7 +492,7 @@ app.post('/submit-review', async (req, res) => {
         console.log('Review saved successfully');
 
         // Update store's review count
-        await Store.findByIdAndUpdate(storeId, { $inc: { reviewCount: 1 } });
+        await AddMyStore.findByIdAndUpdate(storeId, { $inc: { reviewCount: 1 } });
         console.log('Store review count updated');
 
         res.json({ success: true, message: 'Review submitted successfully' });
@@ -517,7 +684,7 @@ app.delete('/delete-review/:reviewId', async (req, res) => {
         await Review.findByIdAndDelete(req.params.reviewId);
         
         // Update store's review count (decrease by 1)
-        await Store.findByIdAndUpdate(review.storeId, { $inc: { reviewCount: -1 } });
+        await AddMyStore.findByIdAndUpdate(review.storeId, { $inc: { reviewCount: -1 } });
         
         console.log('Review deleted successfully');
         res.json({ success: true, message: 'Review deleted successfully' });
@@ -527,7 +694,30 @@ app.delete('/delete-review/:reviewId', async (req, res) => {
     }
 });
 
-
+// Add route to handle supplier item addition
+app.post('/add-supplier-item', async (req, res) => {
+  try {
+    // For now, assume storeId is 1 (or get from session/user)
+    const storeId = 1; // Replace with actual logic to get supplier's storeId
+    const { name, price, unit, category, stockQuantity, description } = req.body;
+    const newProduct = new Product({
+      name,
+      price,
+      unit,
+      category,
+      stockQuantity,
+      description,
+      storeId: storeId // Should be ObjectId of the store
+    });
+    await newProduct.save();
+    // Fetch all products for this store
+    const products = await Product.find({ storeId: storeId });
+    res.render('pages/supplier_dsb', { products });
+  } catch (err) {
+    console.error('Error adding supplier item:', err);
+    res.status(500).send('Error adding supplier item');
+  }
+});
 
 
 // Port setup
@@ -540,7 +730,10 @@ const server = http.createServer(app);
 // MongoDB and start server
 const start = async () => {
   try {
-    const connection = await mongoose.connect("mongodb+srv://shreyagaikwad107:PshuPkjxdG2HMWY5@cluster0.enpmrvd.mongodb.net/?retryWrites=true&w=majority");
+    const connection = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true});
+
     console.log(`Connected to MongoDB: ${connection.connection.host}`);
 
     server.listen(PORT, () => {

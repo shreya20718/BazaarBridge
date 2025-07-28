@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Student Profile</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
             justify-content: center;
         }
 
-        .dashboard-container {
+        .profile-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
@@ -33,7 +33,7 @@
             transition: all 0.3s ease;
         }
 
-        .dashboard-container:hover {
+        .profile-container:hover {
             transform: translateY(-5px);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
         }
@@ -51,13 +51,13 @@
             animation: fadeInDown 0.8s ease;
         }
 
-        ul {
+        .profile-info {
             list-style: none;
             margin: 0;
             padding: 0;
         }
 
-        li {
+        .profile-info li {
             background: rgba(255, 255, 255, 0.8);
             margin: 12px 0;
             padding: 18px 25px;
@@ -71,7 +71,7 @@
             overflow: hidden;
         }
 
-        li::before {
+        .profile-info li::before {
             content: '';
             position: absolute;
             top: 0;
@@ -83,56 +83,60 @@
             transition: opacity 0.3s ease;
         }
 
-        li:hover {
+        .profile-info li:hover {
             transform: translateX(8px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             border-left-color: #764ba2;
         }
 
-        li:hover::before {
+        .profile-info li:hover::before {
             opacity: 1;
         }
 
-        li:nth-child(odd) {
+        .profile-info li:nth-child(odd) {
             border-left-color: #52c41a;
         }
 
-        li:nth-child(even) {
+        .profile-info li:nth-child(even) {
             border-left-color: #1890ff;
         }
 
-        li:nth-child(3n) {
-            border-left-color: #fa8c16;
-        }
-
-        strong {
-            font-weight: 600;
+        .profile-info strong {
             color: #2c3e50;
+            font-weight: 600;
+            margin-right: 10px;
         }
 
-        a {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            text-decoration: none;
-            padding: 14px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1em;
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
             margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
-            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             min-width: 120px;
         }
 
-        a:hover {
+        .btn:hover {
             background: linear-gradient(135deg, #ee5a24, #ff6b6b);
             transform: translateY(-3px);
             box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
         }
 
-        a:active {
+        .btn:active {
             transform: translateY(-1px);
         }
 
@@ -165,23 +169,18 @@
             }
         }
 
-        li {
+        .profile-info li {
             animation: fadeInUp 0.6s ease forwards;
             animation-delay: calc(var(--delay) * 0.1s);
         }
 
-        li:nth-child(1) { --delay: 1; }
-        li:nth-child(2) { --delay: 2; }
-        li:nth-child(3) { --delay: 3; }
-        li:nth-child(4) { --delay: 4; }
-        li:nth-child(5) { --delay: 5; }
-        li:nth-child(6) { --delay: 6; }
-        li:nth-child(7) { --delay: 7; }
-        li:nth-child(8) { --delay: 8; }
-        li:nth-child(9) { --delay: 9; }
+        .profile-info li:nth-child(1) { --delay: 1; }
+        .profile-info li:nth-child(2) { --delay: 2; }
+        .profile-info li:nth-child(3) { --delay: 3; }
+        .profile-info li:nth-child(4) { --delay: 4; }
 
         @media (max-width: 768px) {
-            .dashboard-container {
+            .profile-container {
                 padding: 25px;
                 margin: 10px;
             }
@@ -191,12 +190,12 @@
                 margin-bottom: 25px;
             }
 
-            li {
+            .profile-info li {
                 padding: 15px 20px;
                 font-size: 1em;
             }
 
-            a {
+            .btn {
                 padding: 12px 25px;
                 font-size: 1em;
             }
@@ -204,22 +203,23 @@
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <h2>Welcome, <%= supplier.fullName %></h2>
-        <ul>
-            <li><strong>GST Number:</strong> <%= supplier.gstNumber %></li>
-            <li><strong>PAN Number:</strong> <%= supplier.panNumber %></li>
-            <li><strong>Aadhaar Number:</strong> <%= supplier.aadhaarNumber %></li>
-            <li><strong>Contact Number:</strong> <%= supplier.contactNumber %></li>
-            <li><strong>Email Address:</strong> <%= supplier.emailAddress %></li>
-            <li><strong>Business Address:</strong> <%= supplier.businessAddress %></li>
-            <li><strong>Pickup Address:</strong> <%= supplier.pickupAddress %></li>
-            <li><strong>Account Holder Name:</strong> <%= supplier.accountHolderName %></li>
-            <li><strong>Bank Name:</strong> <%= supplier.bankName %></li>
+    <div class="profile-container">
+        <h2>Welcome, <%= user.name %></h2>
+        <ul class="profile-info">
+            <li><strong>Name:</strong> <%= user.name %></li>
+            <li><strong>Email:</strong> <%= user.email %></li>
+            <li><strong>Member Since:</strong> <%= new Date(user.createdAt).toLocaleDateString() %></li>
+            <li><strong>User ID:</strong> <%= user._id %></li>
         </ul>
+        
+        <div class="action-buttons">
+            <a href="/" class="btn">Home</a>
+            <a href="/dashboard" class="btn">Dashboard</a>
+        </div>
+        
         <div class="logout-container">
-            <a href="/logout">Logout</a>
+            <a href="/logout" class="btn">Logout</a>
         </div>
     </div>
 </body>
-</html>
+</html> 

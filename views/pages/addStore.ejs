@@ -500,7 +500,7 @@
                 <p>Join BazarBridge and start selling to thousands of customers</p>
             </div>
 
-            <form id="storeForm">
+            <form id="storeForm" action="/add-store" method="POST" enctype="multipart/form-data">
                 <div class="form-section">
                     <div class="section-title">
                         <div class="section-icon">🏪</div>
@@ -608,7 +608,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Register My Store</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='/supplierdash'">Register My Store</button>
                 
                 <div class="success-message" id="successMessage">
                     🎉 Store registered successfully! You'll receive confirmation within 24 hours.
@@ -631,7 +631,7 @@
                 <div class="footer-icon">ℹ<i class="fas fa-info-circle"></i></div>
                 <span>About Us</span>
             </a>
-            <a href="#" class="footer-item">
+            <a href="/account" class="footer-item">
                 <div class="footer-icon"><i class="fas fa-user"></i></div>
                 <span>Account</span>
             </a>
@@ -643,129 +643,93 @@
     </div>
 
     <script>
-        // Image upload functionality
-        const imageUpload = document.getElementById('imageUpload');
-        const fileInput = document.getElementById('storeImage');
+    // Image upload functionality
+    const imageUpload = document.getElementById('imageUpload');
+    const fileInput = document.getElementById('storeImage');
 
-        imageUpload.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            imageUpload.classList.add('dragover');
-        });
+    imageUpload.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        imageUpload.classList.add('dragover');
+    });
 
-        imageUpload.addEventListener('dragleave', () => {
-            imageUpload.classList.remove('dragover');
-        });
+    imageUpload.addEventListener('dragleave', () => {
+        imageUpload.classList.remove('dragover');
+    });
 
-        imageUpload.addEventListener('drop', (e) => {
-            e.preventDefault();
-            imageUpload.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                handleFileSelect(files[0]);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFileSelect(e.target.files[0]);
-            }
-        });
-
-        function handleFileSelect(file) {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'image-preview';
-                    
-                    // Clear previous content and add preview
-                    imageUpload.innerHTML = '';
-                    imageUpload.appendChild(fileInput);
-                    imageUpload.appendChild(img);
-                    imageUpload.style.padding = '20px';
-                };
-                reader.readAsDataURL(file);
-            }
+    imageUpload.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imageUpload.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
         }
+    });
 
-        // Custom delivery time toggle
-        document.getElementById('maxDeliveryTime').addEventListener('change', function() {
-            const customTimeGroup = document.getElementById('customTimeGroup');
-            if (this.value === 'custom') {
-                customTimeGroup.style.display = 'block';
-                document.getElementById('customTime').required = true;
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'image-preview';
+                // Clear previous content and add preview
+                imageUpload.innerHTML = '';
+                imageUpload.appendChild(fileInput);
+                imageUpload.appendChild(img);
+                imageUpload.style.padding = '20px';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Custom delivery time toggle
+    document.getElementById('maxDeliveryTime').addEventListener('change', function() {
+        const customTimeGroup = document.getElementById('customTimeGroup');
+        if (this.value === 'custom') {
+            customTimeGroup.style.display = 'block';
+            document.getElementById('customTime').required = true;
+        } else {
+            customTimeGroup.style.display = 'none';
+            document.getElementById('customTime').required = false;
+        }
+    });
+
+    // Category selection logic
+    const selectedCategories = new Set();
+    document.querySelectorAll('.category-tag').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const cat = this.getAttribute('data-category');
+            if (selectedCategories.has(cat)) {
+                selectedCategories.delete(cat);
+                this.classList.remove('selected');
             } else {
-                customTimeGroup.style.display = 'none';
-                document.getElementById('customTime').required = false;
+                selectedCategories.add(cat);
+                this.classList.add('selected');
             }
         });
+    });
 
-        // Category selection
-        document.querySelectorAll('.category-tag').forEach(tag => {
-            tag.addEventListener('click', function() {
-                this.classList.toggle('selected');
-            });
+    // On submit, add hidden inputs for selected categories
+    document.getElementById('storeForm').addEventListener('submit', function(e) {
+        // Remove any previous hidden inputs
+        document.querySelectorAll('input[name="categories"]').forEach(el => el.remove());
+        // Add hidden inputs for each selected category
+        selectedCategories.forEach(cat => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'categories';
+            input.value = cat;
+            this.appendChild(input);
         });
-
-        // Form submission
-        document.getElementById('storeForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get selected categories
-            const selectedCategories = Array.from(document.querySelectorAll('.category-tag.selected'))
-                .map(tag => tag.dataset.category);
-            
-            // Get selected delivery options
-            const selectedDelivery = Array.from(document.querySelectorAll('input[name="deliveryOptions"]:checked'))
-                .map(input => input.value);
-            
-            // Get form data
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            data.categories = selectedCategories;
-            data.deliveryOptions = selectedDelivery;
-            
-            // Simulate form submission
-            const submitBtn = this.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
-            
-            submitBtn.textContent = 'Registering Store...';
-            submitBtn.style.background = '#ffc107';
-            
-            setTimeout(() => {
-                document.getElementById('successMessage').style.display = 'block';
-                submitBtn.textContent = 'Store Registered!';
-                submitBtn.style.background = '#28a745';
-                
-                // Scroll to success message
-                document.getElementById('successMessage').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-                
-                // Reset form after 4 seconds
-                setTimeout(() => {
-                    this.reset();
-                    document.querySelectorAll('.category-tag.selected').forEach(tag => {
-                        tag.classList.remove('selected');
-                    });
-                    submitBtn.textContent = originalText;
-                    submitBtn.style.background = '';
-                    document.getElementById('successMessage').style.display = 'none';
-                    
-                    // Reset image upload
-                    imageUpload.innerHTML = `
-                        <input type="file" id="storeImage" name="storeImage" accept="image/*" required>
-                        <div class="upload-icon">📷</div>
-                        <div class="upload-text">Click to upload or drag and drop</div>
-                        <div class="upload-hint">PNG, JPG up to 5MB</div>
-                    `;
-                    imageUpload.style.padding = '40px';
-                }, 4000);
-            }, 2000);
-        });
-    </script>
+        // Allow normal form submission (do NOT preventDefault)
+    });
+</script>
 </body>
 </html>
